@@ -90,6 +90,7 @@ export default function Dashboard() {
                   <th className="py-2">File Name</th>
                   <th className="py-2">Status</th>
                   <th className="py-2">Uploaded At</th>
+<th className="py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -103,6 +104,14 @@ export default function Dashboard() {
                     </td>
                     <td className="py-2">
                       {new Date(doc.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="py-2">
+                      <button
+                        onClick={() => navigate(`/sign/${doc.id}`)}
+                        className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                      >
+                        Sign
+                      </button>
                     </td>
                   </tr>
                 ))}

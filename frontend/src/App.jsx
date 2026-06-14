@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import SignDocument from './pages/SignDocument'
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('token')
@@ -20,6 +21,11 @@ export default function App() {
             <Dashboard />
           </PrivateRoute>
         } />
+        <Route path="/sign/:documentId" element={
+  <PrivateRoute>
+    <SignDocument />
+  </PrivateRoute>
+} />
       </Routes>
     </BrowserRouter>
   )
