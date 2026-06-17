@@ -31,6 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/documents/download/**").permitAll()
                         .requestMatchers("/api/documents/public/**").permitAll()
+                        .requestMatchers("/api/audit/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
