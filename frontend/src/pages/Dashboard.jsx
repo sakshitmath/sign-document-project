@@ -22,6 +22,16 @@ export default function Dashboard() {
     }
   }
 
+  const finalizeDocument = async (docId) => {
+    try {
+      await API.post(`/signatures/finalize/${docId}`)
+      fetchDocuments()
+      alert('Document signed successfully!')
+    } catch (err) {
+      alert('Please place a signature first!')
+    }
+  }
+
   const handleUpload = async (e) => {
     e.preventDefault()
     if (!file) return
@@ -50,10 +60,7 @@ export default function Dashboard() {
         <h1 className="text-xl font-bold text-blue-600">DocSign</h1>
         <div className="flex items-center gap-4">
           <span className="text-gray-600">Hello, {name}!</span>
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-          >
+          <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
             Logout
           </button>
         </div>
@@ -63,17 +70,8 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl shadow p-6 mb-8">
           <h2 className="text-lg font-semibold mb-4">Upload Document</h2>
           <form onSubmit={handleUpload} className="flex gap-4 items-center">
-            <input
-              type="file"
-              accept=".pdf"
-              onChange={(e) => setFile(e.target.files[0])}
-              className="flex-1 border p-2 rounded-lg"
-            />
-            <button
-              type="submit"
-              disabled={uploading}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-            >
+            <input type="file" accept=".pdf" onChange={(e) => setFile(e.target.files[0])} className="flex-1 border p-2 rounded-lg" />
+            <button type="submit" disabled={uploading} className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
               {uploading ? 'Uploading...' : 'Upload'}
             </button>
           </form>
@@ -90,7 +88,7 @@ export default function Dashboard() {
                   <th className="py-2">File Name</th>
                   <th className="py-2">Status</th>
                   <th className="py-2">Uploaded At</th>
-<th className="py-2">Actions</th>
+                  <th className="py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -98,20 +96,27 @@ export default function Dashboard() {
                   <tr key={doc.id} className="border-b hover:bg-gray-50">
                     <td className="py-2">{doc.fileName}</td>
                     <td className="py-2">
-                      <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-sm">
+                      <span className={`px-2 py-1 rounded text-sm ${doc.status === 'SIGNED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                         {doc.status}
                       </span>
                     </td>
+                    <td className="py-2">{new Date(doc.createdAt).toLocaleDateString()}</td>
                     <td className="py-2">
-                      {new Date(doc.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="py-2">
-                      <button
-                        onClick={() => navigate(`/sign/${doc.id}`)}
-                        className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
-                      >
-                        Sign
-                      </button>
+                      <div className="flex gap-2">
+                        <button onClick={() => navigate(`/sign/${doc.id}`)} className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                          Sign
+                        </button>
+                        {doc.status === 'PENDING' && (
+                          <button onClick={() => finalizeDocument(doc.id)} className="bg-orange-500 text-white px-3 py-1 rounded text-sm hover:bg-orange-600">
+                            Finalize
+                          </button>
+                        )}
+                        {doc.status === 'SIGNED' && (
+                          <a href={`http://localhost:8081/api/documents/download/${doc.id}`} target="_blank" rel="noreferrer" className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                            Download
+                          </a>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

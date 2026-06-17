@@ -33,6 +33,7 @@ public class SignatureService {
         signature.setX(request.getX());
         signature.setY(request.getY());
         signature.setPage(request.getPage());
+        signature.setSignatureText(request.getSignatureText());
 
         return signatureRepository.save(signature);
     }

@@ -30,6 +30,9 @@ public class Signature {
     @Column(nullable = false)
     private Integer page;
 
+    @Column
+    private String signatureText;
+
     @Column(nullable = false)
     private String status = "PENDING";
 

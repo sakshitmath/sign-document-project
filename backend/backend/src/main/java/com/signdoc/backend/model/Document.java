@@ -1,5 +1,6 @@
 package com.signdoc.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -21,6 +22,9 @@ public class Document {
 
     @Column(nullable = false)
     private String status = "PENDING";
+
+    @Column(unique = true)
+    private String signingToken;
 
     @ManyToOne
     @JoinColumn(name = "uploaded_by", nullable = false)

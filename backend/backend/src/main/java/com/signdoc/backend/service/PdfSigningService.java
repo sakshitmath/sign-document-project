@@ -34,29 +34,43 @@ public class PdfSigningService {
             throw new RuntimeException("No signatures found for this document");
         }
 
-        PDDocument pdf = org.apache.pdfbox.Loader.loadPDF(new File(document.getFilePath()));
+        // Always load original file path
+        String originalPath = document.getFilePath();
+        if (originalPath.startsWith("uploads/signed_")) {
+            throw new RuntimeException("Document already signed");
+        }
+
+        PDDocument pdf = org.apache.pdfbox.Loader.loadPDF(new File(originalPath));
 
         for (Signature sig : signatures) {
             int pageIndex = sig.getPage() - 1;
+            if (pageIndex >= pdf.getNumberOfPages()) pageIndex = 0;
             PDPage page = pdf.getPage(pageIndex);
 
             PDPageContentStream contentStream = new PDPageContentStream(
                     pdf, page, PDPageContentStream.AppendMode.APPEND, true, true);
 
             contentStream.setFont(
-                    new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 12);
-            contentStream.setNonStrokingColor(0f, 0f, 1f);
+                    new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 14);
+            contentStream.setNonStrokingColor(0f, 0f, 0.8f);
 
-            float pdfY = page.getMediaBox().getHeight() - sig.getY();
+            float scaleX = page.getMediaBox().getWidth() / 794f;
+            float scaleY = page.getMediaBox().getHeight() / 1123f;
+            float pdfX = sig.getX() * scaleX;
+            float pdfY = page.getMediaBox().getHeight() - (sig.getY() * scaleY);
+
+            String textToShow = (sig.getSignatureText() != null && !sig.getSignatureText().isEmpty())
+                    ? sig.getSignatureText()
+                    : sig.getSigner().getName();
 
             contentStream.beginText();
-            contentStream.newLineAtOffset(sig.getX(), pdfY);
-            contentStream.showText("Signed by: " + sig.getSigner().getName());
+            contentStream.newLineAtOffset(pdfX, pdfY);
+            contentStream.showText(textToShow);
             contentStream.endText();
             contentStream.close();
         }
 
-        String signedPath = "uploads/signed_" + document.getFileName();
+        String signedPath = "uploads/signed_" + System.currentTimeMillis() + "_" + document.getFileName();
         pdf.save(signedPath);
         pdf.close();
 

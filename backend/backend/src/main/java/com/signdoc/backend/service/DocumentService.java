@@ -48,4 +48,8 @@ public class DocumentService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return documentRepository.findByUploadedBy(user);
     }
+    public Document getDocumentById(Long id) {
+        return documentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+    }
 }

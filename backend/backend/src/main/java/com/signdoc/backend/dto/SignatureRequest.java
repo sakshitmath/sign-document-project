@@ -8,4 +8,5 @@ public class SignatureRequest {
     private Float x;
     private Float y;
     private Integer page;
+    private String signatureText;
 }
