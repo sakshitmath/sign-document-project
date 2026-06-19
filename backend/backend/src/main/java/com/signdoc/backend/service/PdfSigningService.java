@@ -59,15 +59,28 @@ public class PdfSigningService {
             float pdfX = sig.getX() * scaleX;
             float pdfY = page.getMediaBox().getHeight() - (sig.getY() * scaleY);
 
-            String textToShow = (sig.getSignatureText() != null && !sig.getSignatureText().isEmpty())
-                    ? sig.getSignatureText()
-                    : sig.getSigner().getName();
-
-            contentStream.beginText();
-            contentStream.newLineAtOffset(pdfX, pdfY);
-            contentStream.showText(textToShow);
-            contentStream.endText();
-            contentStream.close();
+            if (sig.getStampImageBase64() != null && !sig.getStampImageBase64().isEmpty()) {
+                // Embed actual stamp image
+                String base64Data = sig.getStampImageBase64();
+                if (base64Data.contains(",")) {
+                    base64Data = base64Data.split(",")[1];
+                }
+                byte[] imageBytes = java.util.Base64.getDecoder().decode(base64Data);
+                java.io.InputStream imgStream = new java.io.ByteArrayInputStream(imageBytes);
+                org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject pdImage =
+                        org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray(pdf, imageBytes, "stamp");
+                contentStream.drawImage(pdImage, pdfX, pdfY - 50, 100, 50);
+                contentStream.close();
+            } else {
+                String textToShow = (sig.getSignatureText() != null && !sig.getSignatureText().isEmpty())
+                        ? sig.getSignatureText()
+                        : sig.getSigner().getName();
+                contentStream.beginText();
+                contentStream.newLineAtOffset(pdfX, pdfY);
+                contentStream.showText(textToShow);
+                contentStream.endText();
+                contentStream.close();
+            }
         }
 
         String signedPath = "uploads/signed_" + System.currentTimeMillis() + "_" + document.getFileName();

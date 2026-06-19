@@ -33,6 +33,9 @@ public class Signature {
     @Column
     private String signatureText;
 
+    @Column(columnDefinition = "TEXT")
+    private String stampImageBase64;
+
     @Column(nullable = false)
     private String status = "PENDING";
 

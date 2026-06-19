@@ -178,7 +178,8 @@ export default function SignDocument() {
         await API.post('/signatures', {
           documentId: parseInt(documentId),
           x: sig.x, y: sig.y, page: sig.page || 1,
-          signatureText: sig.text || '[COMPANY STAMP]',
+         signatureText: sig.type === 'image' ? '[STAMP]' : sig.text,
+stampImageBase64: sig.type === 'image' ? sig.src : null,
         })
       }
       await API.post(`/signatures/finalize/${documentId}`)

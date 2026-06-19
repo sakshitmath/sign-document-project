@@ -9,4 +9,5 @@ public class SignatureRequest {
     private Float y;
     private Integer page;
     private String signatureText;
+    private String stampImageBase64;
 }
