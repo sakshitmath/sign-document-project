@@ -22,22 +22,15 @@ public class DocumentService {
     private final String UPLOAD_DIR = "uploads/";
 
     public Document uploadDocument(MultipartFile file, String email) throws IOException {
-        // Create uploads folder if not exists
-        Files.createDirectories(Paths.get(UPLOAD_DIR));
-
-        // Save file to disk
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(UPLOAD_DIR + fileName);
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
         // Get user
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Save document info to DB
+        // Save document info + file bytes to DB
         Document document = new Document();
         document.setFileName(file.getOriginalFilename());
-        document.setFilePath(filePath.toString());
+        document.setFilePath(file.getOriginalFilename());
+        document.setFileData(file.getBytes());
         document.setUploadedBy(user);
 
         return documentRepository.save(document);
