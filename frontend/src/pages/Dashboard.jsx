@@ -112,7 +112,7 @@ export default function Dashboard() {
                           </button>
                         )}
                         {doc.status === 'SIGNED' && (
-                          <a href={`http://localhost:8081/api/documents/download/${doc.id}`} target="_blank" rel="noreferrer" className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                          <a href={`https://signdoc-backend.onrender.com/api/documents/download/${doc.id}`} target="_blank" rel="noreferrer" className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
                             Download
                           </a>
                         )}
