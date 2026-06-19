@@ -42,14 +42,16 @@ public class DocumentController {
     }
 
     @GetMapping("/download/{id}")
-    public ResponseEntity<byte[]> downloadDocument(
+    public ResponseEntity<Resource> downloadDocument(
             @PathVariable Long id,
             Authentication authentication) {
         Document document = documentService.getDocumentById(id);
+        File file = new File(document.getFilePath());
+        Resource resource = new FileSystemResource(file);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + document.getFileName() + "\"")
+                        "inline; filename=\"" + document.getFileName() + "\"")
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(document.getFileData());
+                .body(resource);
     }
 }

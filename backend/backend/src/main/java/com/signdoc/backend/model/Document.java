@@ -17,12 +17,8 @@ public class Document {
     @Column(nullable = false)
     private String fileName;
 
-    @Column
+    @Column(nullable = false)
     private String filePath;
-
-    @Lob
-    @Column(columnDefinition = "bytea")
-    private byte[] fileData;
 
     @Column(nullable = false)
     private String status = "PENDING";
