@@ -39,7 +39,7 @@ export default function SignDocument() {
   const [items, setItems] = useState([])
   const [saving, setSaving] = useState(false)
   const [numPages, setNumPages] = useState(null)
-  const pdfUrl = `https://signdoc-backend.onrender.com/api/documents/download/${documentId}`
+  const pdfUrl = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8081'}/api/documents/download/${documentId}`
 
   // Interaction state
   const interactionRef = useRef(null) // { type: 'drag'|'resize'|'sidebar', id, ox, oy, sidebarItem }

@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: 'https://signdoc-backend.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8081/api',
 })
 
 API.interceptors.request.use((config) => {
