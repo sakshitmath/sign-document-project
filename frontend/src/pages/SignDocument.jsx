@@ -39,7 +39,7 @@ export default function SignDocument() {
   const [items, setItems] = useState([])
   const [saving, setSaving] = useState(false)
   const [numPages, setNumPages] = useState(null)
-  const pdfUrl = `http://localhost:8081/api/documents/download/${documentId}`
+  const pdfUrl = `https://signdoc-backend.onrender.com/api/documents/download/${documentId}`
 
   // Interaction state
   const interactionRef = useRef(null) // { type: 'drag'|'resize'|'sidebar', id, ox, oy, sidebarItem }
@@ -303,14 +303,7 @@ export default function SignDocument() {
                   {item.type === 'image' ? (
                     <img src={item.src} alt="stamp" style={{ width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none' }} />
                   ) : (
-                    <span style={{
-                      ...FONTS[item.font || 0].style,
-                      color: item.color,
-                      pointerEvents: 'none',
-                      fontSize: `${Math.max(10, item.height * 0.45)}px`,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                    }}>
+                    <span style={{ ...FONTS[item.font || 0].style, color: item.color, pointerEvents: 'none' }}>
                       {item.text}
                     </span>
                   )}
