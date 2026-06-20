@@ -34,6 +34,7 @@ public class SignatureService {
         signature.setY(request.getY());
         signature.setPage(request.getPage());
         signature.setSignatureText(request.getSignatureText());
+        signature.setStampImageBase64(request.getStampImageBase64());
 
         return signatureRepository.save(signature);
     }

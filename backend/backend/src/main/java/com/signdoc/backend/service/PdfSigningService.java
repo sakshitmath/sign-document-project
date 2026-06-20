@@ -52,7 +52,7 @@ public class PdfSigningService {
 
             contentStream.setFont(
                     new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 14);
-            contentStream.setNonStrokingColor(0f, 0f, 0.8f);
+            contentStream.setNonStrokingColor(0f, 0f, 0f);
 
             float scaleX = page.getMediaBox().getWidth() / 794f;
             float scaleY = page.getMediaBox().getHeight() / 1123f;
@@ -60,17 +60,25 @@ public class PdfSigningService {
             float pdfY = page.getMediaBox().getHeight() - (sig.getY() * scaleY);
 
             if (sig.getStampImageBase64() != null && !sig.getStampImageBase64().isEmpty()) {
-                // Embed actual stamp image
-                String base64Data = sig.getStampImageBase64();
-                if (base64Data.contains(",")) {
-                    base64Data = base64Data.split(",")[1];
+                try {
+                    String base64Data = sig.getStampImageBase64();
+                    if (base64Data.contains(",")) {
+                        base64Data = base64Data.split(",")[1];
+                    }
+                    byte[] imageBytes = java.util.Base64.getDecoder().decode(base64Data);
+                    org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject pdImage =
+                            org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
+                                    .createFromByteArray(pdf, imageBytes, "stamp");
+                    contentStream.drawImage(pdImage, pdfX, pdfY - 60f, 120f, 60f);
+                    contentStream.close();
+                } catch (Exception ex) {
+                    System.out.println("Stamp error: " + ex.getMessage());
+                    contentStream.beginText();
+                    contentStream.newLineAtOffset(pdfX, pdfY);
+                    contentStream.showText("[STAMP]");
+                    contentStream.endText();
+                    contentStream.close();
                 }
-                byte[] imageBytes = java.util.Base64.getDecoder().decode(base64Data);
-                java.io.InputStream imgStream = new java.io.ByteArrayInputStream(imageBytes);
-                org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject pdImage =
-                        org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject.createFromByteArray(pdf, imageBytes, "stamp");
-                contentStream.drawImage(pdImage, pdfX, pdfY - 50, 100, 50);
-                contentStream.close();
             } else {
                 String textToShow = (sig.getSignatureText() != null && !sig.getSignatureText().isEmpty())
                         ? sig.getSignatureText()
